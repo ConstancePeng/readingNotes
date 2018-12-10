@@ -4,8 +4,8 @@
    - [引用数据类型](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#%E5%BC%95%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B--object%E6%97%A0%E5%BA%8F%E9%94%AE%E5%80%BC%E5%AF%B9) 
       - [Array(数组)](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#array%E6%95%B0%E7%BB%84-%E5%8F%AF%E4%BB%A5%E5%90%8C%E6%97%B6%E5%AD%98%E5%82%A8%E4%BB%BB%E6%84%8F%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B) 
       - [Date(日期)](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#date%E6%97%A5%E6%9C%9F) 
-      - [RegExp(正则表达式)](https://github.com/ConstancePeng/readingNotes/new/master/javascript#regexp%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F)
-      - [Function](https://github.com/ConstancePeng/readingNotes/new/master/javascript#function)
+      - [RegExp(正则表达式)](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#regexp%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F)
+      - [Function](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#function)
 - [typeof](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#typeof) 
 - [其他](https://github.com/ConstancePeng/readingNotes/blob/master/javascript/javascript%E5%9F%BA%E7%A1%80.md#%E5%85%B6%E4%BB%96) 
 ### <script>标签  
