@@ -59,3 +59,37 @@ effectAllowed//与dropEffect配合使用，表示只允许对应的dropEffect操
 ```
 > 注意：这些设置实际没有什么用，主要是来设置拖拉时鼠标的显示图标，实际并不会对元素操作，如移动元素，要在事件中处理才行。还有一个api可以设置鼠标图片:   
 setTragImage(element,x,y)，设置拖动时的鼠标图片，x，y表示鼠标在图片中的位置，element可以是图片也可以是其他元素，图片的话则直接显示，元素的话显示渲染之后的元素
+```HTML
+<button draggable="true" id="tutorial">按钮</button>
+<div id='aa'></div>
+```
+```javascript
+var button = document.getElementById('tutorial');
+var aa = document.getElementById('aa');
+button.addEventListener('dragstart',function (e){
+	e.dataTransfer.setData('target',e.target.id)
+})
+button.addEventListener('drag',function (){
+	<!-- console.log('drag') -->
+})
+button.addEventListener('dragend',function (){
+	<!-- console.log('dragend') -->
+})
+aa.addEventListener('dragenter',function (e){
+	e.preventDefault()
+	e.dataTransfer.dropEffect='none'
+	e.dataTransfer.effectAllowed='copy'
+})
+aa.addEventListener('dragleave',function (){
+	<!-- console.log('dragleave') -->
+})
+aa.addEventListener('dragover',function (e){
+	e.preventDefault()
+})
+aa.addEventListener('drop',function (e){
+	e.preventDefault()
+	var d=e.dataTransfer.getData('target')
+	e.target.appendChild(document.getElementById(d))//这句才能实现真正元素的移动
+})
+```
+![image](https://github.com/ConstancePeng/readingNotes/blob/master/pic/%E6%8B%96%E6%94%BE.gif)
