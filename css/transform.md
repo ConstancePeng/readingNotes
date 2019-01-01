@@ -10,7 +10,7 @@ transform-origin: 50% 10% 3px；
 transform-origin: left top
 ```
 具体取值影响如下图：
-![image](https://note.youdao.com/favicon.ico)
+![image](https://github.com/ConstancePeng/readingNotes/blob/master/pic/transform-origin.png)
 
 注意：transform-origin对translate变化不产生影响，translate位移始终相对元素正中心
 
@@ -148,7 +148,7 @@ bx+dy+f=dy
 如matrix(2,0,0,0.1,0,0)=translate(2,0.1)
 3. rotate进行旋转，可以拆解成x，y方向上的位移变化
 
-![image](https://note.youdao.com/favicon.ico)
+![image](https://github.com/ConstancePeng/readingNotes/blob/master/pic/matrix-rotate.png)
 ```math
 \begin{cases}
 x'=x*\cos\theta-y*\sin\theta\\
