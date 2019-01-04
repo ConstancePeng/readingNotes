@@ -15,7 +15,8 @@ var a=new Promise(function(resolve,reject){
     console.log(arguments);
 })
 ```
-![image]https://github.com/ConstancePeng/readingNotes/blob/master/pic/promise(func).png)
+![image](https://github.com/ConstancePeng/readingNotes/blob/master/pic/promise(func).png)
+
 3. 在实例完Promise后，传入Promise的函数会立刻执行,但不会阻塞后面代码的执行，而是异步去执行传入Promise的函数。
 ```javascript
 var a=new Promise(function(resolve,reject){
