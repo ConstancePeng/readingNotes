@@ -29,8 +29,7 @@ consle.log(a)
 上面介绍到Promise实例化后，传入构造函数的函数会立刻开始异步执行，那现在就有一个问题，该如何获取到这个函数执行结果呢?这里就要用到then，不过需要在传如构造函数的函数里进行配合
 1. 在构造函数里，显示调用resolve或reject传递数据或异常
 2. 调用then函数，传入两个(第二个不强求)需要执行的回调函数，第一个是fulfilled状态执行，第二个是rejected状态执行，函调函数的参数即是用resolve或reject传递数据或异常
-3.then函数中的回调函数只有当Promise实例状态发生变化时才会执行
-4. then函数中的回调函数中返回的对象就是then的返回对象，可以在其中在返回一个Promise实例，可以以链式方式实现回调嵌套
+3. then函数中的回调函数只有当Promise实例状态发生变化时才会执行
 ```javascript
 var p=new Promise(function(resolve,reject){
     setTimeout(() => {
@@ -61,7 +60,48 @@ t.then((result) => {
     console.log(err);//fail
 });
 ```
-通过上面的例子，我们可以理解Promise的作用是实现串联函数(传入其构造函数的函数)与其回调(传入then的函数)，
+通过上面的例子，我们可以理解Promise的作用是串联函数(传入其构造函数的函数)与其回调(传入then的函数)
+
+4. then函数会返回一个新的promise对象，如果then中的回调函数返回新的Promise实例，则返回回调函数返回的，否则返回Promise内新建返回的(这个promise实例保存有相同的异步执行结果，可以再次使用then函数获取)；可以以链式方式实现回调嵌套
+```javascript
+let p=new Promise(function(resolve,reject){
+    setTimeout(() => {
+        resolve('success')
+    }, 1000)
+})
+
+let z=p.then((result) => {
+    console.log(result);
+}, (err) => {
+    console.log(err);
+});
+let x=p.then((result) => {
+    console.log(result);
+}, (err) => {
+    console.log(err);
+});
+//会打印两个sucess，说明then默认返回的promise实例有相同的异步计算结果
+
+console.log(z==x)
+//false 表明then每次返回的都是一个新的promise实例
+
+let t =p.then((result) => {
+    return new Promise(function(resolve,reject){
+		setTimeout(() => {
+			console.log('new promise')
+			reject('fail');
+		}, 1000)
+	});
+}, (err) => {
+   return err;
+});
+t.then((result) => {
+    console.log(result);
+}, (err) => {
+    console.log(err);//fail
+});
+//打印new promise，fail，表明当then的回调函数返回一个新的promise实例时，then会直接返回这个promise实例
+```
 
 这里需要解释一下，promise实例有一个状态，刚开始创建时，值为pending(执行中)，即传入的构造函数正在执行
 1. 只有调用resolve或reject才能改变其状态值，不会受到其他的影响；resolve修改状态为fulfilled(成功)，reject修改状态为rejected(失败)
@@ -107,7 +147,7 @@ p.then((result) => {
 
 注意:在node中如果promise实例化时调用了reject，而没有在then或catch中处理rejected状态的函数，会报一个UnhandledPromiseRejectionWarning；在Firefox浏览器中不会。
 
-promise对象内部有异常，会直接将终止异步函数，而不会影响外部执行
+promise对象内部有异常，会直接终止异步函数，而不会影响外部执行
 
 #### finally
 1. finally是Promise原型上的方法，表示不管promise对象最终状态如何都会执行的方法，不依赖于promise的结果和状态；
