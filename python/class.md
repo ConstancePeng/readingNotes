@@ -168,7 +168,7 @@ class D(B,C):
 print D.a#2,查找列表L为DBCA
 ```
 
-子类调用父类方法可以使用super(subClassname,self).parentFuncName，但是只会查找第一个父类
+III. 子类调用父类方法可以使用super(subClassname,self).parentFuncName，但是只会查找第一个父类
 ```python
 class A(object):
 	def __init__(self,a):
@@ -197,6 +197,12 @@ d=C(1)
 print d.b#1
 print d.a#1
 ```
+super(a_type,obj),
+- 参数：obj是一个实例，a_type是obj的mro中的一个，且isinstance(obj, a_type) == True
+- 功能：super的方法时在obj的mro列表中a_type类后的类中查找对应方法和属性，如
+```python
+
+```
 #### 关系判断方法
 ```python
 issubclass(sub,sup)#判断sub是不是sup的子类，注意sub和sup是一个类时也返回True
@@ -208,3 +214,6 @@ getattr(obj,attr)#获取obj的attr属性
 setattr(obj,attr,val)#设置obj的attr属性的值为val
 delattr(obj,attr)#删除obj的attr属性
 ```
+
+#### 元类(\_\_metaclass__)
+python中类也是一个对象，在使用class定义类时就会创建一个类对象，
