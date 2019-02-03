@@ -95,7 +95,7 @@ L[C(D,F)]=C+merge(L[D],L[F],DF)
     =CDFO
 L[A(B,C)]=A+merge(L[B],L[C],BC)
     =A+merge(BDEO,CDFO,BC)#先在BDEO取B，B只要出现(BDEO,BC)就是第一个
-    =AB+merge(DEO,CDFO,C)#继续BDEO中取D,但是在CDFO中不是第一个，向后从CDFO中取C，B只要出现(CDFO,C)就是第一个
+    =AB+merge(DEO,CDFO,C)#继续BDEO中取D,但是在CDFO中不是第一个，向后从CDFO中取C，C只要出现(CDFO,C)就是第一个
     =ABC+merge(DEO,DFO)#从DEO中取D,D满足
     =ABCD+merge(EO,FO)#依次取E,F,O
     =ABCDEFO
@@ -157,7 +157,7 @@ print D.a#1,从B开查找，到B的父类A查找
 class A(object):#新式类，继承自object
 	a=1
 
-class B(A):#继承自A也变成经典类
+class B(A):#继承自A也变成新式类
 	pass
 
 class C(A):
@@ -214,6 +214,194 @@ getattr(obj,attr)#获取obj的attr属性
 setattr(obj,attr,val)#设置obj的attr属性的值为val
 delattr(obj,attr)#删除obj的attr属性
 ```
+#### \_\_new__
+\_\_new__和\_\_init__都是定义在类内的内置函数，在使用类创建类实例时，如果有\_\_new__会先调用，如果有\_\_init__会接着被调用，\_\_new__必须返回一个类实例，此实例会传给\_\_init__作为self，可以理解为\_\_new__创建类实例，\_\_init__初始化类实例，如果没有\_\_new__，python会自动创建类实例传给\_\_init__
+```python
+class a(object):
+	def __new__(cls):
+		print 'a new'
+		return object.__new__(cls)
+	def __init__(self):
+		print 'a init'
+		
+a()#创建类实例，先调用__new__再调用__init__
+'''
+a new
+a init
+'''
+```
+当类有继承，在创建实例时：
+- 只会自动调用子类的\_\_new__和\_\_init__，父类的\_\_new__和\_\_init__需要显示调用才能触发
+- 如果子类没有\_\_new__和\_\_init__，会按照mro顺序查找第一个__new__和__init__执行
+```python
+class a(object):
+	def __new__(cls):
+		print 'a new'
+		return object.__new__(cls)
+	def __init__(self):
+		print 'a init'
 
+class b(a):
+	def __new__(cls):
+		print 'b new'
+		return object.__new__(cls)
+	def __init__(self):
+		print 'b init'
+		
+b()
+'''
+b new
+b init
+'''
+#不会自动调用父类中__new__和__init__
+
+class a(object):
+	def __new__(cls):
+		print 'a new'
+		return object.__new__(cls)
+	def __init__(self):
+		print 'a init'
+
+class b(a):
+	def __new__(cls):
+		print 'b new'
+		return super(b,cls).__new__(cls)#显示调用父类的__new__
+	def __init__(self):
+		print 'b init'
+		super(b,self).__init__()#显示调用父类的__init__
+		
+b()
+'''
+b new
+a new
+b init
+a init
+'''
+
+class a(object):
+	def __new__(cls):
+		print 'a new'
+		return object.__new__(cls)
+	def __init__(self):
+		print 'a init'
+
+class b(a):
+	
+	def __init__(self):
+		print 'b init'
+		
+b()
+'''
+a new
+b init
+'''
+#会按照mro：ba查找到__new__执行，就是正常的方法查找
+```
+\_\_new__和\_\_init__区别：
+- \_\_new__函数不会自动补充参数，\_\_init__会自动补充self参数，调用的时候实际少传一个参数
+- \_\_new__函数必须要返回一个对象，否则不会调用\_\_init__，\_\_init__不需要有返回值
+```python
+class a(object):
+	def __new__(cls):
+		print 'a new'
+		#return object.__new__(cls)#不返回对象，不会调用__init__
+	def __init__(self):
+		print 'a init'
+a()#不返回对象，不会调用__init__
+'''
+a new
+'''
+```
 #### 元类(\_\_metaclass__)
-python中类也是一个对象，在使用class定义类时就会创建一个类对象，
+python中类也是一个对象，在使用class定义类或使用type时就会创建一个类对象
+1. type
+
+type用两种用法，只有一个参数时，type(object)，返回对象的类型(类)，如
+```python
+type(1)#<type 'int'>
+```
+三个参数时，tpye(name, bases, dict)，返回一个类对象
+
+name是定义类的名字；bases是继承的父类，是一个tuple；dict是类的属性(类内共享的，非实例属性)，是一个字典
+```python
+t=type('a',(object,),{'v':1})#<class '__main__.a'>，返回了一个类对象a
+b=t()
+t.v#1
+b.v#1
+b.v=2
+t.v#1，即v是t的类属性
+```
+2. class
+在使用class定义一个类时，即创建一个类对象
+
+\_\_metaclass__在类定义是预处理类的一些属性和方法，类似于在类内部使用type方法处理；
+
+\_\_metaclass__需要做的事情也需要和type类似：
+- 接收的参数相同，即类名name，继承的父类bases，类的属性dict
+- 必须返回一个类对象，一般使用方法返回一个type生成的类对象，或使用类继承type，然后再其__new__中调用type.__new__或__init__返回一个类对象
+
+上述原则使得\_\_metaclass__可以是一个函数也可以是一个类(只要这个类返回一个类对象)
+```python
+def metaclass(name, bases, attrs):
+    print name
+    print bases
+    print attrs
+	return type(name, bases, attrs)
+
+class test(object):
+    __metaclass__=metaclass
+    
+    sa=100
+    def __init__(self, **kw):
+        super(Model, self).__init__(**kw)
+
+    def __getattr__(self, key):
+        pass
+
+    def __setattr__(self, key, value):
+        pass
+
+class User(Model):
+    #定义类的属性到列的映射：
+    id = 100
+
+#传递给__metaclass__的attr包含类的属性和方法，如test中的sa，__setattr__等
+#当有继承时，__metaclass__指向一个函数时，只会有父类触发__metaclass__如test，子类不会如User
+```
+当__metaclass__指向一个类时，有__new__会执行__new__，有__init__会执行__init__，但是传递的参数是4个，包括__metaclass__指向的类的类名
+```python
+class ModelMetaclass(type):
+    def __new__(cls, name, bases, attrs):
+        print cls#cls是ModelMetaclass
+        print name
+        print bases
+        print attrs
+	    #return type(name, bases, attrs)，可以返回type创建的，或者继承type，再使用super.__new__
+	    return super(ModelMetaclass,cls).__new__(cls, name, bases, attrs)
+    def __init__(cls, name, bases, attrs):
+        print cls
+        print name
+        print bases
+        print attrs
+
+class test(object):
+    __metaclass__=metaclass
+    
+    sa=100
+    def __init__(self, **kw):
+        super(Model, self).__init__(**kw)
+
+    def __getattr__(self, key):
+        pass
+
+    def __setattr__(self, key, value):
+        pass
+
+class User(test):
+    #定义类的属性到列的映射：
+    id = 100
+
+#传递给__metaclass__的attr包含类的属性和方法，如test中的sa，__setattr__等
+#当有继承时，__metaclass__指向一个类时，父类如(test)和子类(如User),都会触发__metaclass__,而且参数name会不同，都是自己类名，即User会传递name为User，test会传递name为test
+```
+
